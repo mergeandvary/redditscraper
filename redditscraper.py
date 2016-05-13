@@ -128,32 +128,32 @@ for searchterm in SEARCH_TERMS:
             individual_submissions_db = individual_submissions_db + (submission_comments_db,)
 
 # Write out a submissions page with all submissions data
-if 'submissions' in str(sys.argv) or len(sys.argv) == 1:
-    print 'WRITING SUBMISSIONS'
-    submissions_ws = wb.add_sheet("Submissions")
-    for i, row in enumerate(submissions_db):
-        for j, col in enumerate(row):
-            submissions_ws.write(i, j, col)
+# if 'submissions' in str(sys.argv) or len(sys.argv) == 1:
+#     print 'WRITING SUBMISSIONS'
+#     submissions_ws = wb.add_sheet("Submissions")
+#     for i, row in enumerate(submissions_db):
+#         for j, col in enumerate(row):
+#             submissions_ws.write(i, j, col)
 
-# Write out a comments page with all comments data
-if 'combined' in str(sys.argv) or len(sys.argv) == 1:
-    print 'WRITING COMMENTS DB'
-    comments_ws = wb.add_sheet("Comments")
-    for i, row in enumerate(comments_db):
-        for j, col in enumerate(row):
-            comments_ws.write(i, j, col)
+# # Write out a comments page with all comments data
+# if 'combined' in str(sys.argv) or len(sys.argv) == 1:
+#     print 'WRITING COMMENTS DB'
+#     comments_ws = wb.add_sheet("Comments")
+#     for i, row in enumerate(comments_db):
+#         for j, col in enumerate(row):
+#             comments_ws.write(i, j, col)
 
-# Write out a comments page for each individual submission id
-if 'comments' in str(sys.argv) or len(sys.argv) == 1:
-    for individual_submission in individual_submissions_db:
-        indsubid = individual_submission[1][0]
-        print 'WRITING COMMENTS ID' + str(indsubid)
-        submission_comments_ws = wb.add_sheet(str(indsubid))
-        for i, row in enumerate(individual_submission):
-            for j, col in enumerate(row):
-                submission_comments_ws.write(i, j, col)
+# # Write out a comments page for each individual submission id
+# if 'comments' in str(sys.argv) or len(sys.argv) == 1:
+#     for individual_submission in individual_submissions_db:
+#         indsubid = individual_submission[1][0]
+#         print 'WRITING COMMENTS ID' + str(indsubid)
+#         submission_comments_ws = wb.add_sheet(str(indsubid))
+#         for i, row in enumerate(individual_submission):
+#             for j, col in enumerate(row):
+#                 submission_comments_ws.write(i, j, col)
 
-# Write the authors page
+# # Write the authors page
 for author in authors:
     author_db = ()
     try:
@@ -164,11 +164,24 @@ for author in authors:
         authors_db = authors_db + (author_db,)
     except Exception as e: print(e)
 
-if 'authors' in str(sys.argv) or len(sys.argv) == 1:
-    print 'WRITING AUTHORS DB'
-    authors_ws = wb.add_sheet("Authors")
-    for i, row in enumerate(authors_db):
-        for j, col in enumerate(row):
-            authors_ws.write(i, j, col)
+# if 'authors' in str(sys.argv) or len(sys.argv) == 1:
+#     print 'WRITING AUTHORS DB'
+#     authors_ws = wb.add_sheet("Authors")
+#     for i, row in enumerate(authors_db):
+#         for j, col in enumerate(row):
+#             authors_ws.write(i, j, col)
 
-wb.save("myworkbook.xls")
+# wb.save("myworkbook.xls")
+
+
+print "Submissions DB"
+pprint.pprint(submission_comments_db)
+
+print "\nComments DB"
+pprint.pprint(comments_db)
+
+print "\nIndividual Submissions DB"
+pprint.pprint(individual_submissions_db)
+
+print "\nAuthors DB"
+pprint.pprint(authors_db)
