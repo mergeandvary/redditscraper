@@ -6,7 +6,7 @@ con = None
 
 try:
      
-    con = psycopg2.connect(database='testdb', user='mergeandvary') 
+    con = psycopg2.connect(database='testerdb') 
     cur = con.cursor()
     cur.execute('SELECT version()')          
     ver = cur.fetchone()
