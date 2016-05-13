@@ -7,7 +7,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-SEARCH_TERMS = ('INeedMasculism',)
+SEARCH_TERMS = ('INeedMasculinism',)
 r = praw.Reddit(user_agent='linux:academic.research.comments.scraper:v0.2.1 (by /u/mergeandvary)')
 
 # Define Vars
@@ -84,7 +84,6 @@ for searchterm in SEARCH_TERMS:
 
 for author in author_collection:
     try:
-        pprint.pprint(vars(author))
         author_dict = {}
         author_dict['Created']          = datetime.datetime.fromtimestamp(int(author.created_utc)).strftime('%Y-%m-%d')
         author_dict['Comment_Karma']    = author.comment_karma
@@ -93,6 +92,10 @@ for author in author_collection:
         author_db_dict[author.name]     = author_dict
     except Exception as e: print(e)
 
-# pprint.pprint(submission_db_dict)
-# pprint.pprint(comment_db_dict)
-# pprint.pprint(author_db_dict)
+# Write As Logfiles
+submission_db_logfile = open('submission_db_logfile.txt', 'w')
+pprint.pprint(submission_db_dict, submission_db_logfile)
+comment_db_logfile = open('comment_db_logfile.txt', 'w')
+pprint.pprint(comment_db_dict, comment_db_logfile)
+author_db_logfile = open('author_db_logfile.txt', 'w')
+pprint.pprint(author_db_dict, author_db_logfile)
