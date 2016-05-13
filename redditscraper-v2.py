@@ -100,3 +100,7 @@ comment_db_logfile = open('comment_db_logfile.txt', 'w')
 pprint.pprint(comment_db_dict, comment_db_logfile)
 author_db_logfile = open('author_db_logfile.txt', 'w')
 pprint.pprint(author_db_dict, author_db_logfile)
+
+for key, value in submission_db_dict.iteritems():
+    print key
+    print value
