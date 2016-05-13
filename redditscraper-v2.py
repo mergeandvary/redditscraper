@@ -8,7 +8,7 @@ import psycopg2
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-SEARCH_TERMS = ('INeedMasculinism',)
+SEARCH_TERMS = ('INeedMasculism',)
 r = praw.Reddit(user_agent='linux:academic.research.comments.scraper:v0.2.1 (by /u/mergeandvary)')
 
 # Define Vars
@@ -101,6 +101,6 @@ pprint.pprint(comment_db_dict, comment_db_logfile)
 author_db_logfile = open('author_db_logfile.txt', 'w')
 pprint.pprint(author_db_dict, author_db_logfile)
 
-for key, value in submission_db_dict.iteritems():
-    print key
-    print value
+# for key_a, value_a in comment_db_dict.iteritems():
+#     print key_a
+#     print value_a['Body'] 
