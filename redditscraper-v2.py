@@ -2,6 +2,7 @@ import praw
 import pprint
 import datetime
 import sys
+import psycopg2
 
 # Set default encoding to utf-8 so we dont get ascii encoding errors
 reload(sys)
