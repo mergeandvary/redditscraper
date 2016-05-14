@@ -8,8 +8,12 @@ import psycopg2
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-SEARCH_TERMS = ('INeedMasculism',)
-r = praw.Reddit(user_agent='linux:academic.research.comments.scraper:v0.2.1 (by /u/mergeandvary)')
+SEARCH_TERMS        = ('INeedMasculism', 'INeedMasculinism', 'INeedMasculismBecause', 'INeedMasculinismBecause')
+POSTGRES_USER       = 'ubuntu'
+POSTGRES_DB         = 'redditdata001'
+
+
+r = praw.Reddit(user_agent='linux:academic.research.comments.scraper:v0.2.3 (by /u/mergeandvary)')
 
 # Define Vars
 submission_db_dict = {}
@@ -93,7 +97,8 @@ for author in author_collection:
         author_db_dict[author.name]     = author_dict
     except Exception as e: print(e)
 
-# Write As Logfiles
+# LOGFILES
+print 'WRITING in LOG Textfiles'
 submission_db_logfile = open('submission_db_logfile.txt', 'w')
 pprint.pprint(submission_db_dict, submission_db_logfile)
 comment_db_logfile = open('comment_db_logfile.txt', 'w')
@@ -101,6 +106,79 @@ pprint.pprint(comment_db_dict, comment_db_logfile)
 author_db_logfile = open('author_db_logfile.txt', 'w')
 pprint.pprint(author_db_dict, author_db_logfile)
 
-# for key_a, value_a in comment_db_dict.iteritems():
-#     print key_a
-#     print value_a['Body'] 
+print 'ADDING in POSTGRESQL Database'
+# POSTGRESQL
+con = None
+
+try:     
+    con = psycopg2.connect(database=POSTGRES_DB, user=POSTGRES_USER) 
+    cur = con.cursor()
+
+    # CLEAN UP TABLES
+    cur.execute("DROP TABLE IF EXISTS Submissions CASCADE")
+    cur.execute("DROP TABLE IF EXISTS Comments CASCADE")
+    cur.execute("DROP TABLE IF EXISTS Authors CASCADE")
+    
+    cur.execute("CREATE TABLE Submissions(SubmissionID TEXT PRIMARY KEY, Author TEXT, Created TEXT, Score INT, Selftext TEXT, SubredditID TEXT, Title TEXT)")
+    cur.execute("CREATE TABLE Comments(CommentID TEXT PRIMARY KEY, Author TEXT, Body TEXT, Controversial INT, Created TEXT, Edited TEXT, ParentID TEXT, Removal_Reason TEXT, Report_Reasons TEXT, Score INT, SubmissionID TEXT REFERENCES Submissions)")
+    cur.execute("CREATE TABLE Authors(Author TEXT PRIMARY KEY, Comment_Karma INT, Created TEXT, Is_Mod TEXT, Link_Karma INT)")
+
+    # ADD SUBMISSIONS   
+    table = ()
+    for key, value in submission_db_dict.iteritems():
+        entry = (str(key), 
+                 str(value['Author']), 
+                 str(value['Created']), 
+                 int(value['Score']), 
+                 str(value['Selftext']), 
+                 str(value['SubredditID']), 
+                 str(value['Title'])
+                 )
+        table = table + (entry,)    
+    query = "INSERT INTO Submissions (SubmissionID, Author, Created, Score, Selftext, SubredditID, Title) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+    cur.executemany(query, table)
+
+    # ADD COMMENTS
+    table = ()
+    for key, value in comment_db_dict.iteritems():
+        entry = (str(key), 
+                 str(value['Author']), 
+                 str(value['Body']), 
+                 int(value['Controversial']), 
+                 str(value['Created']), 
+                 str(value['Edited']), 
+                 str(value['ParentID']),
+                 str(value['Removal_Reason']),
+                 str(value['Report_Reasons']),
+                 int(value['Score']),
+                 str(value['SubmissionID']),
+                 )
+        table = table + (entry,)
+    query = "INSERT INTO Comments (CommentID, Author, Body, Controversial, Created, Edited, ParentID, Removal_Reason, Report_Reasons, Score, SubmissionID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    cur.executemany(query, table)
+
+    # ADD AUTHORS
+    table = ()
+    for key, value in author_db_dict.iteritems():
+        entry = (str(key),
+                 int(value['Comment_Karma']),
+                 str(value['Created']),
+                 str(value['Is_Mod']),
+                 int(value['Link_Karma']),
+                 )
+        table = table + (entry,)
+    query = "INSERT INTO Authors (Author, Comment_Karma, Created, Is_Mod, Link_Karma) VALUES (%s, %s, %s, %s, %s)"
+    cur.executemany(query, table)
+
+    # COMMIT CHANGES
+    con.commit()
+
+except psycopg2.DatabaseError, e:
+    if con:
+        con.rollback()
+    print 'Error %s' % e    
+    sys.exit(1)
+    
+finally:
+    if con:
+        con.close()
