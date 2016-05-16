@@ -8,7 +8,7 @@ import psycopg2
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-SEARCH_TERMS        = ('INeedMasculism', 'INeedMasculinism', 'INeedMasculismBecause', 'INeedMasculinismBecause')
+SEARCH_TERMS        = ('INeedMasculism', 'INeedMasculinism', 'INeedMasculinismBecause', 'INeedMasculismBecause',)
 POSTGRES_USER       = 'ubuntu'
 POSTGRES_DB         = 'redditdata001'
 
@@ -19,6 +19,7 @@ r = praw.Reddit(user_agent='linux:academic.research.comments.scraper:v0.2.3 (by 
 submission_db_dict = {}
 comment_db_dict = {}
 author_db_dict = {}
+subreddit_db_dict = {}
 author_collection = ()
 
 def addCommentRegression(submission,comment):
@@ -54,9 +55,19 @@ def addCommentRegression(submission,comment):
 def addAuthor(author):
     global author_collection
     try:
-        if author not in author_collection:
-            author_collection = author_collection + (author,)
-            print 'Added Author: ' + str(author)
+        #if author not in author_collection:
+        author_collection = author_collection + (author,)
+        print 'Added Author: ' + str(author)
+    except Exception as e: print str(e) + ' for author ' + str(author)
+    # NOTICE: It seems that some users who are shadow banned will drop a 404 HTTP error
+    # Not really sure what to do with these authors !
+
+def addSubreddit(subreddit_id,name):
+    global subreddit_db_dict
+    try:
+        if subreddit_id not in subreddit_db_dict:
+            subreddit_db_dict[subreddit_id] = {'Name': str(name)}
+            print 'Added subreddit: ' + str(name)
     except Exception as e: print(e)
 
 for searchterm in SEARCH_TERMS:
@@ -79,6 +90,7 @@ for searchterm in SEARCH_TERMS:
                 submission_dict['Selftext']     = submission.selftext
 
                 addAuthor(submission.author)
+                addSubreddit(submission.subreddit_id,submission.subreddit)
                 submission_db_dict[submission.id] = submission_dict
                 print 'Added Submission ID: ' + str(submission.id)
             except Exception as e: print(e)
@@ -90,12 +102,19 @@ for searchterm in SEARCH_TERMS:
 for author in author_collection:
     try:
         author_dict = {}
-        author_dict['Created']          = datetime.datetime.fromtimestamp(int(author.created_utc)).strftime('%Y-%m-%d')
-        author_dict['Comment_Karma']    = author.comment_karma
-        author_dict['Link_Karma']       = author.link_karma
-        author_dict['Is_Mod']           = author.is_mod
-        author_db_dict[author.name]     = author_dict
-    except Exception as e: print(e)
+        author_dict['Created']           = datetime.datetime.fromtimestamp(int(author.created_utc)).strftime('%Y-%m-%d')
+        author_dict['Comment_Karma']     = author.comment_karma
+        author_dict['Link_Karma']        = author.link_karma
+        author_dict['Is_Mod']            = author.is_mod
+        author_db_dict[str(author.name)] = author_dict
+    except Exception as e: 
+        print(e)
+        try:
+            author_db_dict[str(author.name)] = {'Created': '', 'Comment_Karma': '0', 'Link_Karma': '0', 'Is_Mod': ''}
+        except Exception as e:
+            print(e)
+            author_db_dict['None'] = {'Created': '', 'Comment_Karma': '0', 'Link_Karma': '0', 'Is_Mod': ''}
+        # THIS IS 404 ERROR for AUTHOR to make sure we still have an entry. If fails again then None object
 
 # LOGFILES
 print 'WRITING in LOG Textfiles'
@@ -118,10 +137,37 @@ try:
     cur.execute("DROP TABLE IF EXISTS Submissions CASCADE")
     cur.execute("DROP TABLE IF EXISTS Comments CASCADE")
     cur.execute("DROP TABLE IF EXISTS Authors CASCADE")
+    cur.execute("DROP TABLE IF EXISTS Subreddits CASCADE")
     
-    cur.execute("CREATE TABLE Submissions(SubmissionID TEXT PRIMARY KEY, Author TEXT, Created TEXT, Score INT, Selftext TEXT, SubredditID TEXT, Title TEXT)")
-    cur.execute("CREATE TABLE Comments(CommentID TEXT PRIMARY KEY, Author TEXT, Body TEXT, Controversial INT, Created TEXT, Edited TEXT, ParentID TEXT, Removal_Reason TEXT, Report_Reasons TEXT, Score INT, SubmissionID TEXT REFERENCES Submissions)")
+    cur.execute("CREATE TABLE Subreddits(SubredditID TEXT PRIMARY KEY, Subreddit_Name TEXT)")
     cur.execute("CREATE TABLE Authors(Author TEXT PRIMARY KEY, Comment_Karma INT, Created TEXT, Is_Mod TEXT, Link_Karma INT)")
+    cur.execute("CREATE TABLE Submissions(SubmissionID TEXT PRIMARY KEY, Author TEXT REFERENCES Authors, Created TEXT, Score INT, Selftext TEXT, SubredditID TEXT REFERENCES Subreddits, Title TEXT)")
+    cur.execute("CREATE TABLE Comments(CommentID TEXT PRIMARY KEY, Author TEXT REFERENCES Authors, Body TEXT, Controversial INT, Created TEXT, Edited TEXT, ParentID TEXT, Removal_Reason TEXT, Report_Reasons TEXT, Score INT, SubmissionID TEXT REFERENCES Submissions)")
+    # PROBLEM how do we deal with parent comments that are the submission?
+
+
+    # ADD SUBREDDITS
+    table = ()
+    for key, value in subreddit_db_dict.iteritems():
+        entry = (str(key),
+                 str(value['Name']),
+                 )
+        table = table + (entry,)
+    query = "INSERT INTO Subreddits (SubredditID, Subreddit_Name) VALUES (%s, %s)"
+    cur.executemany(query, table)
+
+    # ADD AUTHORS
+    table = ()
+    for key, value in author_db_dict.iteritems():
+        entry = (str(key),
+                 int(value['Comment_Karma']),
+                 str(value['Created']),
+                 str(value['Is_Mod']),
+                 int(value['Link_Karma']),
+                 )
+        table = table + (entry,)
+    query = "INSERT INTO Authors (Author, Comment_Karma, Created, Is_Mod, Link_Karma) VALUES (%s, %s, %s, %s, %s)"
+    cur.executemany(query, table)
 
     # ADD SUBMISSIONS   
     table = ()
@@ -155,19 +201,6 @@ try:
                  )
         table = table + (entry,)
     query = "INSERT INTO Comments (CommentID, Author, Body, Controversial, Created, Edited, ParentID, Removal_Reason, Report_Reasons, Score, SubmissionID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    cur.executemany(query, table)
-
-    # ADD AUTHORS
-    table = ()
-    for key, value in author_db_dict.iteritems():
-        entry = (str(key),
-                 int(value['Comment_Karma']),
-                 str(value['Created']),
-                 str(value['Is_Mod']),
-                 int(value['Link_Karma']),
-                 )
-        table = table + (entry,)
-    query = "INSERT INTO Authors (Author, Comment_Karma, Created, Is_Mod, Link_Karma) VALUES (%s, %s, %s, %s, %s)"
     cur.executemany(query, table)
 
     # COMMIT CHANGES
