@@ -8,7 +8,7 @@ import psycopg2
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-SEARCH_TERMS        = ('INeedMasculism', 'INeedMasculinism', 'INeedMasculinismBecause', 'INeedMasculismBecause',)
+SEARCH_TERMS        = ('INeedMasculism', 'INeedMasculinism',)
 POSTGRES_USER       = 'ubuntu'
 POSTGRES_DB         = 'redditdata001'
 
@@ -101,20 +101,22 @@ for searchterm in SEARCH_TERMS:
 
 for author in author_collection:
     try:
-        author_dict = {}
-        author_dict['Created']           = datetime.datetime.fromtimestamp(int(author.created_utc)).strftime('%Y-%m-%d')
-        author_dict['Comment_Karma']     = author.comment_karma
-        author_dict['Link_Karma']        = author.link_karma
-        author_dict['Is_Mod']            = author.is_mod
-        author_db_dict[str(author.name)] = author_dict
+        if author.name:
+            author_dict = {}
+            author_dict['Created']           = datetime.datetime.fromtimestamp(int(author.created_utc)).strftime('%Y-%m-%d')
+            author_dict['Comment_Karma']     = author.comment_karma
+            author_dict['Link_Karma']        = author.link_karma
+            author_dict['Is_Mod']            = author.is_mod
+            author_db_dict[str(author.name)] = author_dict
     except Exception as e: 
         print(e)
         try:
             author_db_dict[str(author.name)] = {'Created': '', 'Comment_Karma': '0', 'Link_Karma': '0', 'Is_Mod': ''}
-        except Exception as e:
-            print(e)
-            author_db_dict['None'] = {'Created': '', 'Comment_Karma': '0', 'Link_Karma': '0', 'Is_Mod': ''}
+        except:
+            pass
         # THIS IS 404 ERROR for AUTHOR to make sure we still have an entry. If fails again then None object
+author_db_dict['None'] = {'Created': '', 'Comment_Karma': '0', 'Link_Karma': '0', 'Is_Mod': ''}
+        
 
 # LOGFILES
 print 'WRITING in LOG Textfiles'
