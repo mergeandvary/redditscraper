@@ -1,6 +1,6 @@
 {u'1875ye': {'Author': Redditor(user_name='Little_Baby_Jesus'),
              'Created': '2013-02-09 17:09:49',
-             'Score': 57,
+             'Score': 63,
              'Selftext': u'',
              'SubredditID': u't5_2qhk3',
              'Title': u'#ineedmasculinism has turned into a joke, why is everyone so hostile towards the idea of men having issues..'},
@@ -24,7 +24,7 @@
              'Title': u"#ineedmasculinism has created some good dialog, regardless of it's intentions."},
  u'26plsq': {'Author': Redditor(user_name='Toxic_Gorilla'),
              'Created': '2014-05-28 17:22:44',
-             'Score': 8,
+             'Score': 7,
              'Selftext': u"A while back, some guys from the MRM got #INeedMasculism trending on Twitter, using it to discuss the unique problems they face in society as men.  Of course, the Twitter feminists couldn't leave well enough alone, so they decided to hijack it and mock the shit out of it.  Believe it or not, they're *still* keeping that hashtag going, because apparently the joke hasn't gotten old yet.\n\nKind of puts their whining about men 'hijacking' #YesAllWomen into perspective, doesn't it?",
              'SubredditID': u't5_2zsos',
              'Title': u'Anyone remember #INeedMasculism?'}}
