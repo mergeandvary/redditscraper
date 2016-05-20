@@ -159,7 +159,7 @@ try:
     cur.execute("CREATE TABLE Subreddit(SubredditID TEXT PRIMARY KEY, Subreddit_Name TEXT)")
     cur.execute("CREATE TABLE Author(Author TEXT PRIMARY KEY, Comment_Karma INT, Created TEXT, Is_Mod TEXT, Link_Karma INT, Is_404 TEXT)")
     cur.execute("CREATE TABLE Post(PostID TEXT PRIMARY KEY, Author TEXT REFERENCES Author, Created TEXT, Bodytext TEXT, SubredditID TEXT REFERENCES Subreddit)")
-    cur.execute("CREATE TABLE Submission(PostID TEXT PRIMARY KEY REFERENCES Post, Created TEXT, Score INT, Title TEXT)")
+    cur.execute("CREATE TABLE Submission(PostID TEXT PRIMARY KEY REFERENCES Post, Score INT, Title TEXT)")
     cur.execute("CREATE TABLE Comment(PostID TEXT PRIMARY KEY REFERENCES Post, Controversial INT, Edited TEXT, ParentID TEXT REFERENCES Post, Removal_Reason TEXT, Report_Reasons TEXT, Score INT, SubmissionID TEXT REFERENCES Submission)")
     # PROBLEM how do we deal with parent comments that are the submission?
     # SOLUTION Use supertype
@@ -194,29 +194,30 @@ try:
         entry = (str(key), 
                  str(value['Author']), 
                  str(value['Selftext']), 
-                 str(value['SubredditID'])
+                 str(value['SubredditID']),
+                 str(value['Created'])
                  )
         table = table + (entry,)    
     for key, value in comment_db_dict.iteritems():
         entry = (str(key), 
                  str(value['Author']), 
                  str(value['Body']), 
-                 str(value['SubredditID'])
+                 str(value['SubredditID']),
+                 str(value['Created'])
                  )
         table = table + (entry,)    
-    query = "INSERT INTO Post (PostID, Author, Bodytext, SubredditID) VALUES (%s, %s, %s, %s)"
+    query = "INSERT INTO Post (PostID, Author, Bodytext, SubredditID, Created) VALUES (%s, %s, %s, %s, %s)"
     cur.executemany(query, table)
 
     # ADD SUBMISSIONS
     table = ()
     for key, value in submission_db_dict.iteritems():
         entry = (str(key), 
-                 str(value['Created']), 
                  int(value['Score']), 
                  str(value['Title'])
                  )
         table = table + (entry,)    
-    query = "INSERT INTO Submission (PostID, Created, Score, Title) VALUES (%s, %s, %s, %s)"
+    query = "INSERT INTO Submission (PostID, Score, Title) VALUES (%s, %s, %s)"
     cur.executemany(query, table)
 
     # ADD COMMENTS
