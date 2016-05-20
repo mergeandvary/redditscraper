@@ -1,0 +1,89 @@
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext like '%troll%';
+        avg         | mode |       median       |       stddev        | count 
+--------------------+------+--------------------+---------------------+-------
+ 7.8017241379310345 |    1 | 3.0000000000000000 | 11.3904764396946268 |   116
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext not like '%troll%';
+        avg         | mode |       median       |       stddev        | count 
+--------------------+------+--------------------+---------------------+-------
+ 6.3602771362586605 |    1 | 3.0000000000000000 | 13.5213636797941720 |   866
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext like '%4chan%';
+         avg         | mode |       median       |       stddev        | count 
+---------------------+------+--------------------+---------------------+-------
+ 11.6976744186046512 |    2 | 6.0000000000000000 | 16.6369280642576078 |    43
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext not like '%4chan%';
+        avg         | mode |       median       |       stddev        | count 
+--------------------+------+--------------------+---------------------+-------
+ 6.2939297124600639 |    1 | 3.0000000000000000 | 13.0789335405435172 |   939
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext like '%SJW%';
+        avg         | mode |       median       |       stddev        | count 
+--------------------+------+--------------------+---------------------+-------
+ 3.7647058823529412 |    2 | 2.0000000000000000 | 15.3565467932007652 |    51
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext not like '%SJW%';
+        avg         | mode |       median       |       stddev        | count 
+--------------------+------+--------------------+---------------------+-------
+ 6.6820622986036520 |    1 | 3.0000000000000000 | 13.1605426253617739 |   931
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext like '%white genocide%';
+         avg         | mode |       median        |       stddev       | count 
+---------------------+------+---------------------+--------------------+-------
+ 19.0000000000000000 |   12 | 17.0000000000000000 | 8.1853527718724500 |     3
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext not like '%white genocide%';
+        avg         | mode |       median       |       stddev        | count 
+--------------------+------+--------------------+---------------------+-------
+ 6.4923391215526047 |    1 | 3.0000000000000000 | 13.2876271516197279 |   979
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext like '%racist%';
+         avg         | mode |       median       |       stddev        | count 
+---------------------+------+--------------------+---------------------+-------
+ 10.4742268041237113 |    2 | 4.0000000000000000 | 16.5170951740822370 |    97
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext not like '%racist%';
+        avg         | mode |       median       |       stddev        | count 
+--------------------+------+--------------------+---------------------+-------
+ 6.0983050847457627 |    1 | 3.0000000000000000 | 12.8255986716764417 |   885
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext like '%diversity%';
+        avg         | mode |       median       |       stddev        | count 
+--------------------+------+--------------------+---------------------+-------
+ 3.2820512820512821 |    2 | 2.0000000000000000 | 11.4385054184463829 |    39
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext not like '%diversity%';
+        avg         | mode |       median       |       stddev        | count 
+--------------------+------+--------------------+---------------------+-------
+ 6.6648992576882291 |    1 | 3.0000000000000000 | 13.3497023259921529 |   943
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext like '%gamergate%';
+        avg         | mode |       median       |       stddev       | count 
+--------------------+------+--------------------+--------------------+-------
+ 2.1333333333333333 |    2 | 2.0000000000000000 | 5.5144830954064779 |    15
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext not like '%gamergate%';
+        avg         | mode |       median       |       stddev        | count 
+--------------------+------+--------------------+---------------------+-------
+ 6.5987590486039297 |    1 | 3.0000000000000000 | 13.3653207855509961 |   967
+(1 row)
+
+mq20151400=# select avg(score), mode(score), median(score), stddev(score), count(*) from post join comment using (postid) where bodytext like '%%';
+        avg         | mode |       median       |       stddev        | count 
+--------------------+------+--------------------+---------------------+-------
+ 6.5305498981670061 |    1 | 3.0000000000000000 | 13.2903965966130983 |   982
+(1 row)
