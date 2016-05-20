@@ -150,10 +150,6 @@ try:
     cur = con.cursor()
 
     # CLEAN UP TABLES
-    cur.execute("DROP TABLE IF EXISTS Submissions CASCADE")
-    cur.execute("DROP TABLE IF EXISTS Comments CASCADE")
-    cur.execute("DROP TABLE IF EXISTS Authors CASCADE")
-    cur.execute("DROP TABLE IF EXISTS Subreddits CASCADE")
     cur.execute("DROP TABLE IF EXISTS Post CASCADE")
     cur.execute("DROP TABLE IF EXISTS Submission CASCADE")
     cur.execute("DROP TABLE IF EXISTS Comment CASCADE")
