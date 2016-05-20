@@ -14,5 +14,8 @@ for searchterm in SEARCH_TERMS:
     print 'Searching for term: ' + str(searchterm)
     submissions = r.search(searchterm, subreddit=None, sort=None, syntax=None, period=None)
     for submission in submissions:
-        print '\nSUBMISSION ' + str(submission)
-        pprint.pprint(vars(submission))
+        vars_logfile = open('vars_logfile.txt', 'w')
+        pprint.pprint(vars(submission), vars_logfile)
+        for comment in submission.comments:
+            comment_vars_logfile = open('comment_vars_logfile.txt', 'w')
+            pprint.pprint(vars(comment), comment_vars_logfile)
