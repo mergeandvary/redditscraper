@@ -6,9 +6,9 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-SEARCH_TERMS        = ('INeedMasculism', )
-
 r = praw.Reddit(user_agent='linux:academic.research.comments.scraper.tester:v0.2.3 (by /u/mergeandvary)')
+
+SEARCH_TERMS        = ('INeedMasculism', )
 
 for searchterm in SEARCH_TERMS:
     print 'Searching for term: ' + str(searchterm)
